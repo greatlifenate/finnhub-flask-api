@@ -3,7 +3,8 @@ import requests
 
 app = Flask(__name__)
 
-FINNHUB_API_KEY = "your_api_key_here"
+import os
+FINNHUB_API_KEY = os.environ.get("FINNHUB_API_KEY")
 
 @app.route('/quote', methods=['GET'])
 def quote():
