@@ -1,29 +1,23 @@
 from flask import Flask, request, jsonify
 import requests
+import os
 
 app = Flask(__name__)
 
-import os
-FINNHUB_API_KEY = os.environ.get("FINNHUB_API_KEY")
+FINNHUB_API_KEY = os.environ.get('FINNHUB_API_KEY')
 
-@app.route('/quote', methods=['GET'])
-def quote():
+# Stock Quote
+@app.route('/quote')
+def get_quote():
     symbol = request.args.get('symbol')
-    if not symbol:
-        return jsonify({"error": "Missing 'symbol' parameter"}), 400
-
     response = requests.get(
-        'https://finnhub.io/api/v1/quote',
-        params={
-            'symbol': symbol,
-            'token': FINNHUB_API_KEY
-        }
+        f'https://finnhub.io/api/v1/quote?symbol={symbol}&token={FINNHUB_API_KEY}'
     )
-
     return jsonify(response.json())
-# Earnings Reports
+
+# Earnings Report
 @app.route('/earnings')
-def earnings():
+def get_earnings():
     symbol = request.args.get('symbol')
     response = requests.get(
         f'https://finnhub.io/api/v1/stock/earnings?symbol={symbol}&token={FINNHUB_API_KEY}'
@@ -54,6 +48,15 @@ def mf_holdings():
     symbol = request.args.get('symbol')
     response = requests.get(
         f'https://finnhub.io/api/v1/mutual-fund/holdings?symbol={symbol}&token={FINNHUB_API_KEY}'
+    )
+    return jsonify(response.json())
+
+# Key Metrics
+@app.route('/key-metrics')
+def key_metrics():
+    symbol = request.args.get('symbol')
+    response = requests.get(
+        f'https://finnhub.io/api/v1/stock/metric?symbol={symbol}&metric=all&token={FINNHUB_API_KEY}'
     )
     return jsonify(response.json())
 
